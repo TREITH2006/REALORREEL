@@ -11,18 +11,18 @@ This application runs entirely offline after installation. All image processing 
 `
 realorrell/
 +-- backend/                    # FastAPI backend
-¦   +-- __init__.py             # Package marker
-¦   +-- app.py                  # FastAPI app with endpoints (/api/analyze, /api/health, etc.)
-¦   +-- brain_client.py         # LLM client with fallback to rule engine
-¦   +-- config.py               # Configuration (endpoints, timeouts, thresholds)
-¦   +-- forensics.py            # Forensic extraction (EXIF, ELA, FFT, noise/texture)
-¦   +-- samples/                # Sample test images
-¦       +-- sample_ai.png
-¦       +-- sample_real.jpg
+ï¿½   +-- __init__.py             # Package marker
+ï¿½   +-- app.py                  # FastAPI app with endpoints (/api/analyze, /api/health, etc.)
+ï¿½   +-- brain_client.py         # LLM client with fallback to rule engine
+ï¿½   +-- config.py               # Configuration (endpoints, timeouts, thresholds)
+ï¿½   +-- forensics.py            # Forensic extraction (EXIF, ELA, FFT, noise/texture)
+ï¿½   +-- samples/                # Sample test images
+ï¿½       +-- sample_ai.png
+ï¿½       +-- sample_real.jpg
 +-- frontend/                   # Web UI
-¦   +-- app.js                  # Frontend logic + 3D holographic renderer
-¦   +-- index.html              # UI
-¦   +-- style.css               # Styling
+ï¿½   +-- app.js                  # Frontend logic + 3D holographic renderer
+ï¿½   +-- index.html              # UI
+ï¿½   +-- style.css               # Styling
 +-- requirements.txt            # Python dependencies
 +-- start.bat                  # Windows launcher
 +-- start.sh                   # Linux/macOS launcher
@@ -60,8 +60,28 @@ Run python test_system.py to verify dependencies, samples, and connectivity.
 
 The app serves both API and static frontend from the FastAPI server. For local/deployment:
 - Backend serves frontend at root / and static files at /static/
-- All dependencies in equirements.txt
+- All dependencies in requirements.txt
 - Configuration via environment variables (OLLAMA_BASE_URL, OLLAMA_MODEL, HOST, PORT)
+
+## Frontend Deployment (GitHub Pages) + Local Backend
+
+The frontend can be deployed separately (GitHub Pages / any static host) while the backend keeps running on your PC.
+
+What changed for split hosting:
+- `frontend/app.js` has a configurable **Backend API Base URL** (Settings modal). Leave it empty for local same-origin use; set it to your backend URL when hosted separately.
+- Backend binds to `0.0.0.0` and CORS allows all origins.
+- `.github/workflows/deploy-frontend.yml` auto-deploys the `frontend/` folder to GitHub Pages on every push to `main` (when frontend files change).
+
+Steps:
+1. Push repo to GitHub: `git push origin main`
+2. In GitHub repo: **Settings -> Pages -> Source: GitHub Actions** (one-time).
+3. Workflow deploys `frontend/` automatically. Site: `https://<user>.github.io/REALORREEL/`
+4. Make your local backend publicly reachable:
+   - Simplest: `ngrok http 8000` or `cloudflared tunnel --url http://localhost:8000`
+   - Or run backend on a server/VPS: `HOST=0.0.0.0 python backend/app.py`
+5. Open deployed frontend -> **Settings** -> set **Backend API Base URL** to your tunnel/backend URL (e.g. `https://xxxx.ngrok-free.app`) -> Save.
+
+Note: browser must reach the backend URL directly (HTTPS recommended since GitHub Pages is HTTPS; ngrok/cloudflared provide HTTPS automatically).
 
 ## Troubleshooting
 

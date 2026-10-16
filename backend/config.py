@@ -9,8 +9,8 @@ class Config:
     # Optional OpenAI-compatible endpoint (e.g. LM Studio, vLLM, or Ollama /v1)
     OPENAI_COMPATIBLE_URL = os.getenv("OPENAI_COMPATIBLE_URL", "http://localhost:11434/v1")
     
-    # Server settings
-    HOST = os.getenv("HOST", "127.0.0.1")
+    # Server settings (0.0.0.0 so a separately deployed frontend can reach this backend)
+    HOST = os.getenv("HOST", "0.0.0.0")
     PORT = int(os.getenv("PORT", "8000"))
     
     # Request timeouts

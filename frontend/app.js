@@ -5,6 +5,7 @@
 
 // Configuration State
 const state = {
+  apiBase: (localStorage.getItem('realorrell_api_base') || '').replace(/\/$/, ''),
   ollamaUrl: localStorage.getItem('realorrell_ollama_url') || 'http://localhost:11434',
   modelName: localStorage.getItem('realorrell_model_name') || 'qwen2.5-coder:3b',
   currentFile: null,
@@ -40,6 +41,7 @@ const elements = {
   settingsModal: document.getElementById('settingsModal'),
   closeSettingsBtn: document.getElementById('closeSettingsBtn'),
   saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+  apiBaseInput: document.getElementById('apiBaseInput'),
   ollamaUrlInput: document.getElementById('ollamaUrlInput'),
   modelNameInput: document.getElementById('modelNameInput'),
 
@@ -517,6 +519,7 @@ function bindUIEvents() {
 
   // Settings Modal
   elements.settingsBtn.addEventListener('click', () => {
+    elements.apiBaseInput.value = state.apiBase;
     elements.ollamaUrlInput.value = state.ollamaUrl;
     elements.modelNameInput.value = state.modelName;
     elements.settingsModal.classList.remove('hidden');
@@ -527,8 +530,10 @@ function bindUIEvents() {
   });
 
   elements.saveSettingsBtn.addEventListener('click', () => {
+    state.apiBase = elements.apiBaseInput.value.trim().replace(/\/$/, '');
     state.ollamaUrl = elements.ollamaUrlInput.value.trim() || 'http://localhost:11434';
     state.modelName = elements.modelNameInput.value.trim() || 'qwen2.5-coder:3b';
+    localStorage.setItem('realorrell_api_base', state.apiBase);
     localStorage.setItem('realorrell_ollama_url', state.ollamaUrl);
     localStorage.setItem('realorrell_model_name', state.modelName);
     elements.settingsModal.classList.add('hidden');
@@ -561,7 +566,7 @@ async function checkBrainHealth() {
   elements.brainStatusText.textContent = 'Probing AI Brain...';
 
   try {
-    const url = `/api/health?ollama_url=${encodeURIComponent(state.ollamaUrl)}&model_name=${encodeURIComponent(state.modelName)}`;
+    const url = `${state.apiBase}/api/health?ollama_url=${encodeURIComponent(state.ollamaUrl)}&model_name=${encodeURIComponent(state.modelName)}`;
     const res = await fetch(url);
     const data = await res.json();
     
@@ -601,7 +606,7 @@ function loadFile(file) {
 async function loadSample(type) {
   try {
     elements.analyzeBtnText.textContent = `Loading ${type.toUpperCase()} sample...`;
-    const res = await fetch(`/api/sample/${type}`);
+    const res = await fetch(`${state.apiBase}/api/sample/${type}`);
     if (!res.ok) throw new Error('Sample not found on server');
     
     const blob = await res.blob();
@@ -645,7 +650,7 @@ async function runAnalysis() {
   formData.append('model_name', state.modelName);
 
   try {
-    const res = await fetch('/api/analyze', {
+    const res = await fetch(`${state.apiBase}/api/analyze`, {
       method: 'POST',
       body: formData
     });
