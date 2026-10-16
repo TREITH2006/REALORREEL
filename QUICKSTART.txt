@@ -1,0 +1,13 @@
+﻿### Quick Run (Local - Frontend + Backend together)
+1. Open VS Code terminal in C:\Users\adi86\Downloads\realorrell1\REALORREEL
+2. Run:
+`ash
+python backend/app.py
+`
+3. Open http://127.0.0.1:8000 in browser
+
+### Alternate (one-click)
+- Run un_all.bat (Windows CMD)
+- Run un_all.ps1 (PowerShell)
+
+Notes: Works 100% locally. Upload picture -> backend does forensics + optional local LLM -> results shown in frontend.
